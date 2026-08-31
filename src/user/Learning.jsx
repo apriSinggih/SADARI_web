@@ -259,7 +259,13 @@ export default function Learning({ supabase = defaultSupabase, navigate, showAle
               <h3 style={{ margin: 0, fontSize: '1.4rem' }}>{selected.judul}</h3>
             </div>
 
-            <div style={{ lineHeight: 1.7, color: 'var(--text-body)', marginBottom: 24, whiteSpace: 'pre-wrap' }}>
+            <div style={{
+              lineHeight: 1.7,
+              color: 'var(--text-body)',
+              marginBottom: 24,
+              whiteSpace: 'pre-wrap',
+              textAlign: 'justify' // <-- DITAMBAHKAN RATA KANAN KIRI DI SINI
+            }}>
               {selected.content_type === 'text' && <div dangerouslySetInnerHTML={{ __html: selected.konten }} />}
 
               {selected.content_type === 'gdrive' && selected.gdrive_link && (
