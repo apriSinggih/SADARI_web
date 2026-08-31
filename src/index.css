@@ -572,6 +572,15 @@ iframe {
   background: var(--pink-primary);
 }
 
+
+.mobile-material-dropdown {
+  display: none; /* Sembunyikan dropdown di layar besar */
+}
+
+.desktop-material-sidebar {
+  display: block; /* Tampilkan sidebar list */
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
   #root {
@@ -598,6 +607,15 @@ iframe {
   
   h1 {
     font-size: 1.75rem;
+  }
+  .mobile-material-dropdown {
+    display: block;
+    margin-bottom: 16px;
+    width: 100%;
+  }
+
+  .desktop-material-sidebar {
+    display: none;
   }
 }
 

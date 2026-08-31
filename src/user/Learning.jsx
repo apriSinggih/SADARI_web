@@ -6,6 +6,7 @@ export default function Learning({ supabase = defaultSupabase, navigate, showAle
   const [materials, setMaterials] = useState([])
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [isMaterialOpen, setIsMaterialOpen] = useState(false);
 
   useEffect(() => {
     async function init() {
@@ -77,22 +78,177 @@ export default function Learning({ supabase = defaultSupabase, navigate, showAle
 
   return (
     <div className="learning-container">
-      <aside className="learning-sidebar">
-        <h4 style={{ fontSize: '1.05rem', color: 'var(--text-heading)', marginBottom: 14 }}>📖 Daftar Materi</h4>
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-          {materials.map((m, idx) => (
-            <li key={m.id} style={{ marginBottom: 6 }}>
-              <button
-                className={`material-item-btn ${selectedIndex === idx ? 'active' : ''}`}
-                onClick={() => setSelectedIndex(idx)}
-              >
-                <span style={{ fontWeight: 700, minWidth: 20 }}>{m.urutan}.</span>
-                <span>{m.judul}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </aside>
+      <div className="learning-sidebar-wrapper">
+        {/* 1. Dropdown Khusus Tampilan Mobile */}
+        <div
+          className="mobile-material-dropdown"
+          style={{
+            width: '100%',
+            maxWidth: '100%',
+            boxSizing: 'border-box',
+            position: 'relative'
+          }}
+        >
+          <label
+            style={{
+              display: 'block',
+              fontSize: '0.9rem',
+              fontWeight: 600,
+              color: 'var(--text-heading)',
+              marginBottom: 6
+            }}
+          >
+            📖 Pilih Materi:
+          </label>
+
+          {/* Tombol dropdown */}
+          <button
+            type="button"
+            onClick={() => setIsMaterialOpen(!isMaterialOpen)}
+            style={{
+              width: '100%',
+              maxWidth: '100%',
+              minWidth: 0,
+              boxSizing: 'border-box',
+
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 10,
+
+              padding: '10px 12px',
+              borderRadius: 8,
+              border: '1px solid #cbd5e1',
+              backgroundColor: '#fff',
+
+              fontSize: '0.9rem',
+              color: 'var(--text-heading)',
+              cursor: 'pointer',
+              textAlign: 'left',
+
+              boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+            }}
+          >
+            <span
+              style={{
+                minWidth: 0,
+                flex: 1,
+
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {materials[selectedIndex]?.urutan}. {materials[selectedIndex]?.judul}
+            </span>
+
+            <span
+              style={{
+                flexShrink: 0,
+                fontSize: '0.75rem',
+                color: '#64748b',
+                transform: isMaterialOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s'
+              }}
+            >
+              ▼
+            </span>
+          </button>
+
+          {/* Menu dropdown */}
+          {isMaterialOpen && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+
+                width: '100%',
+                maxWidth: '100%',
+                minWidth: 0,
+                boxSizing: 'border-box',
+
+                marginTop: 4,
+                padding: 4,
+
+                backgroundColor: '#fff',
+                border: '1px solid #cbd5e1',
+                borderRadius: 8,
+
+                boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+
+                zIndex: 9999,
+
+                maxHeight: 280,
+                overflowY: 'auto',
+                overflowX: 'hidden'
+              }}
+            >
+              {materials.map((m, idx) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedIndex(idx);
+                    setIsMaterialOpen(false);
+                  }}
+                  style={{
+                    width: '100%',
+                    maxWidth: '100%',
+                    minWidth: 0,
+                    boxSizing: 'border-box',
+
+                    display: 'block',
+
+                    padding: '10px 12px',
+                    margin: 0,
+
+                    border: 'none',
+                    borderRadius: 6,
+                    backgroundColor:
+                      selectedIndex === idx ? '#f1f5f9' : 'transparent',
+
+                    color: 'var(--text-heading)',
+                    fontSize: '0.88rem',
+
+                    textAlign: 'left',
+                    cursor: 'pointer',
+
+                    whiteSpace: 'normal',
+                    overflowWrap: 'anywhere',
+                    wordBreak: 'break-word',
+
+                    lineHeight: 1.4
+                  }}
+                >
+                  {m.urutan}. {m.judul}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* 2. Sidebar Standar Khusus Layar Laptop/Desktop */}
+        <aside className="learning-sidebar desktop-material-sidebar">
+          <h4 style={{ fontSize: '1.05rem', color: 'var(--text-heading)', marginBottom: 14 }}>
+            📖 Daftar Materi
+          </h4>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            {materials.map((m, idx) => (
+              <li key={m.id} style={{ marginBottom: 6 }}>
+                <button
+                  className={`material-item-btn ${selectedIndex === idx ? 'active' : ''}`}
+                  onClick={() => setSelectedIndex(idx)}
+                >
+                  <span style={{ fontWeight: 700, minWidth: 20 }}>{m.urutan}.</span>
+                  <span>{m.judul}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      </div>
       <section className="card learning-content" style={{ padding: '28px' }}>
         {selected ? (
           <div>
