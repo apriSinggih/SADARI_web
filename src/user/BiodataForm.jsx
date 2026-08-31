@@ -1,39 +1,71 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import supabase from '../supabaseClient'
 
 export default function BiodataForm({ navigate, showAlert }) {
-  const [form, setForm] = useState({ nama_lengkap: '', usia: '', paritas: '', tanggal_melahirkan: '', nifas_hari_ke: '' })
+  const [fields, setFields] = useState([])
+  const [form, setForm] = useState({})
   const [loading, setLoading] = useState(false)
+  const [fetching, setFetching] = useState(true)
+
+  // Fetch konfigurasi field yang diatur oleh Admin
+  useEffect(() => {
+    async function fetchConfig() {
+      try {
+        const { data, error } = await supabase
+          .from('bio_config')
+          .select('*')
+          .eq('is_active', true)
+          .order('urutan', { ascending: true })
+
+        if (error) throw error
+        setFields(data || [])
+
+        // Init state form kosong
+        const initialForm = {}
+        data.forEach(f => { initialForm[f.key_name] = '' })
+        setForm(initialForm)
+      } catch (err) {
+        console.error('Error fetching bio config:', err)
+      } finally {
+        setFetching(false)
+      }
+    }
+    fetchConfig()
+  }, [])
 
   async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
     try {
+      // 1. Ambil kolom standar jika ada
       const payload = {
-        nama_lengkap: form.nama_lengkap,
+        nama_lengkap: form.nama_lengkap || null,
         usia: Number(form.usia) || null,
-        paritas: form.paritas,
+        paritas: form.paritas || null,
         tanggal_melahirkan: form.tanggal_melahirkan || null,
-        nifas_hari_ke: Number(form.nifas_hari_ke) || null
+        nifas_hari_ke: Number(form.nifas_hari_ke) || null,
+        data_tambahan: form // Simpan seluruh JSON input untuk fleksibilitas
       }
+
       const { data, error } = await supabase.from('peserta').insert([payload]).select('id').single()
       if (error) throw error
-      const pesertaId = data.id
-      localStorage.setItem('peserta_id', pesertaId)
+
+      localStorage.setItem('peserta_id', data.id)
       localStorage.removeItem('hasil_id')
-      // navigate to pretest
       navigate('/pretest')
     } catch (err) {
       console.error('biodata submit', err)
       if (showAlert) {
-        showAlert('Gagal Menyimpan Biodata', err.message || 'Terjadi kesalahan saat menyimpan data.', 'error')
+        showAlert('Gagal Menyimpan Biodata', err.message || 'Terjadi kesalahan.', 'error')
       } else {
-        alert('Gagal menyimpan biodata: ' + (err.message || 'error'))
+        alert('Gagal menyimpan biodata: ' + err.message)
       }
     } finally {
       setLoading(false)
     }
   }
+
+  if (fetching) return <p style={{ textAlign: 'center', padding: 20 }}>Memuat formulir...</p>
 
   return (
     <form className="card container" onSubmit={handleSubmit} style={{ maxWidth: 620, textAlign: 'left', margin: '0 auto', padding: '32px' }}>
@@ -42,58 +74,22 @@ export default function BiodataForm({ navigate, showAlert }) {
         Silakan lengkapi data diri di bawah ini untuk memulai sesi Pre-Test SADARI.
       </p>
 
-      <div className="form-group">
-        <label>Nama Lengkap</label>
-        <input
-          required
-          placeholder="Masukkan nama lengkap Anda"
-          value={form.nama_lengkap}
-          onChange={(e) => setForm({ ...form, nama_lengkap: e.target.value })}
-        />
+      <div style={{ display: 'grid', gap: '16px' }}>
+        {fields.map((field) => (
+          <div className="form-group" key={field.id}>
+            <label>{field.label} {field.is_required && <span style={{ color: 'red' }}>*</span>}</label>
+            <input
+              required={field.is_required}
+              type={field.field_type}
+              placeholder={`Masukkan ${field.label.toLowerCase()}`}
+              value={form[field.key_name] || ''}
+              onChange={(e) => setForm({ ...form, [field.key_name]: e.target.value })}
+            />
+          </div>
+        ))}
       </div>
 
-      <div className="form-row">
-        <div className="form-group">
-          <label>Usia (Tahun)</label>
-          <input
-            required
-            type="number"
-            placeholder="Contoh: 25"
-            value={form.usia}
-            onChange={(e) => setForm({ ...form, usia: e.target.value })}
-          />
-        </div>
-        <div className="form-group">
-          <label>Paritas</label>
-          <input
-            placeholder="Contoh: P1A0"
-            value={form.paritas}
-            onChange={(e) => setForm({ ...form, paritas: e.target.value })}
-          />
-        </div>
-      </div>
-
-      <div className="form-row">
-        <div className="form-group">
-          <label>Tanggal Melahirkan</label>
-          <input
-            type="date"
-            value={form.tanggal_melahirkan}
-            onChange={(e) => setForm({ ...form, tanggal_melahirkan: e.target.value })}
-          />
-        </div>
-        <div className="form-group">
-          <label>Nifas Hari Ke</label>
-          <input
-            type="number"
-            placeholder="Contoh: 7"
-            value={form.nifas_hari_ke}
-            onChange={(e) => setForm({ ...form, nifas_hari_ke: e.target.value })}
-          />
-        </div>
-      </div>
-
-      <div style={{ textAlign: 'right' }}>
+      <div style={{ textAlign: 'right', marginTop: 24 }}>
         <button className="btn btn-primary" type="submit" disabled={loading} style={{ width: '100%', padding: '12px 24px', fontSize: '1rem' }}>
           {loading ? 'Menyimpan...' : 'Simpan & Mulai Pre-Test ➔'}
         </button>

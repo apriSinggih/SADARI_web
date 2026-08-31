@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import AdminMaterials from './AdminMaterials'
 import AdminQuestions from './AdminQuestions'
 import AdminParticipants from './AdminParticipants'
+import AdminBioConfig from './AdminBioConfig' // 1. Import komponen AdminBioConfig
 
 export default function AdminDashboard({ supabase, onLogout }) {
   const initialTab = (typeof window !== 'undefined' && localStorage.getItem('admin_tab')) || 'materials'
@@ -37,12 +38,18 @@ export default function AdminDashboard({ supabase, onLogout }) {
         <button className={`tab-btn ${tab === 'participants' ? 'active' : ''}`} onClick={() => setTab('participants')}>
           👥 Peserta
         </button>
+        {/* 2. Tambah tombol Tab untuk Config Biodata */}
+        <button className={`tab-btn ${tab === 'bioconfig' ? 'active' : ''}`} onClick={() => setTab('bioconfig')}>
+          ⚙️ Form Biodata
+        </button>
       </nav>
 
       <main>
         {tab === 'materials' && <AdminMaterials supabase={supabase} />}
         {tab === 'questions' && <AdminQuestions supabase={supabase} />}
         {tab === 'participants' && <AdminParticipants supabase={supabase} />}
+        {/* 3. Render komponen AdminBioConfig */}
+        {tab === 'bioconfig' && <AdminBioConfig supabase={supabase} />}
       </main>
     </div>
   )
