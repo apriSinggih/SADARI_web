@@ -209,9 +209,9 @@ export default function AdminMaterials({ supabase }) {
             <div key={it.id} className="card" style={{ padding: '20px', border: editingId === it.id ? '2px solid var(--pink-primary)' : undefined }}>
               <div style={{
                 display: 'flex',
-                justify: 'space-between',
+                justifyContent: 'space-between', // Fix: ubah 'justify' menjadi 'justifyContent'
                 alignItems: 'center',
-                flexWrap: 'wrap', // <-- AGAR TOMBOL BERPINDAH RAPI SAAT LAYAR SEMPIT
+                flexWrap: 'wrap',
                 gap: 12,
                 marginBottom: 12
               }}>
@@ -227,7 +227,7 @@ export default function AdminMaterials({ supabase }) {
                 </div>
 
                 {/* Bagian Kanan: Tombol Edit & Hapus */}
-                <div style={{ display: 'flex', gap: 8, shrink: 0, marginLeft: 'auto' }}>
+                <div style={{ display: 'flex', gap: 8, flexShrink: 0, marginLeft: 'auto' }}>
                   <button
                     onClick={() => handleStartEdit(it)}
                     style={{
@@ -237,7 +237,7 @@ export default function AdminMaterials({ supabase }) {
                       padding: '6px 14px',
                       fontSize: '0.85rem',
                       cursor: 'pointer',
-                      borderRadius: '8px', // Tambah border-radius agar tombol lebih manis
+                      borderRadius: '8px',
                       whiteSpace: 'nowrap'
                     }}
                   >
@@ -268,7 +268,8 @@ export default function AdminMaterials({ supabase }) {
                       fontSize: '0.95rem',
                       color: 'var(--text-body)',
                       lineHeight: 1.6,
-                      whiteSpace: 'pre-wrap' // <-- TAMBAHKAN INI
+                      whiteSpace: 'pre-wrap',
+                      textAlign: 'justify' // <-- DITAMBAHKAN RATA KANAN KIRI DI SINI
                     }}
                   >
                     {it.konten}
