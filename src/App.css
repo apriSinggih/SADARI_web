@@ -1,0 +1,34 @@
+/* App specific minimalist modern overrides */
+
+.hero {
+  position: relative;
+  margin: 16px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero img.base {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 24px rgba(232, 122, 144, 0.25));
+  transition: transform 0.3s ease;
+}
+
+.hero img.base:hover {
+  transform: scale(1.05);
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: var(--pink-primary-light);
+  color: var(--pink-primary-dark);
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
