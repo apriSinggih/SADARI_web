@@ -85,7 +85,7 @@ export default function AdminQuestions({ supabase }) {
             </span>
           )}
         </div>
-        
+
         {/* Tipe Ujian & Kunci Jawaban Benar */}
         <div className="form-grid-2" style={{ marginBottom: 20 }}>
           <div className="form-group">
@@ -133,7 +133,7 @@ export default function AdminQuestions({ supabase }) {
           <label style={{ fontSize: '0.95rem', fontWeight: 600, display: 'block', marginBottom: 12, color: 'var(--text-heading)' }}>
             Pilihan Jawaban (A, B, C, D)
           </label>
-          
+
           <div className="form-grid-2" style={{ gap: 16 }}>
             <div className="form-group">
               <label style={{ color: 'var(--pink-primary-dark)', fontWeight: 600 }}>Pilihan Jawaban A</label>
@@ -201,27 +201,75 @@ export default function AdminQuestions({ supabase }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {items.map(it => (
             <div key={it.id} className="card" style={{ padding: '18px 20px', border: editingId === it.id ? '2px solid var(--pink-primary)' : undefined }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                flexWrap: 'wrap', // <-- AGAR ELEMEN BISA BERPINDAH KE BAWAH SAAT LAYAR SEMPIT
+                gap: 12,
+                marginBottom: 10
+              }}>
+                {/* Bagian Kiri: Badge & Pertanyaan */}
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 10,
+                  flex: '1 1 240px', // Flex basis 240px agar otomatis mengisi/pindah baris di HP
+                  minWidth: 0
+                }}>
                   <span className="badge" style={{
                     background: it.tipe === 'pretest' ? 'var(--pink-primary-light)' : 'rgba(232, 122, 144, 0.15)',
                     color: 'var(--pink-primary-dark)',
-                    textTransform: 'uppercase'
+                    textTransform: 'uppercase',
+                    flexShrink: 0, // Agar badge tidak menciut
+                    marginTop: 2
                   }}>
                     {it.tipe}
                   </span>
-                  <strong style={{ fontSize: '1rem', color: 'var(--text-heading)' }}>{it.pertanyaan}</strong>
+                  <strong style={{
+                    fontSize: '0.98rem',
+                    color: 'var(--text-heading)',
+                    lineHeight: 1.4,
+                    wordBreak: 'break-word' // Mencegah teks panjang merusak layout
+                  }}>
+                    {it.pertanyaan}
+                  </strong>
                 </div>
-                <div style={{ display: 'flex', gap: 8 }}>
+
+                {/* Bagian Kanan: Tombol Edit & Hapus */}
+                <div style={{
+                  display: 'flex',
+                  gap: 8,
+                  flexShrink: 0,
+                  marginLeft: 'auto' // Menjaga posisi di paling kanan di HP
+                }}>
                   <button
                     onClick={() => handleStartEdit(it)}
-                    style={{ background: 'var(--pink-primary-light)', color: 'var(--pink-primary-dark)', border: '1px solid rgba(232, 122, 144, 0.3)', padding: '4px 12px', fontSize: '0.82rem', cursor: 'pointer' }}
+                    style={{
+                      background: 'var(--pink-primary-light)',
+                      color: 'var(--pink-primary-dark)',
+                      border: '1px solid rgba(232, 122, 144, 0.3)',
+                      padding: '5px 12px',
+                      fontSize: '0.82rem',
+                      cursor: 'pointer',
+                      borderRadius: '6px',
+                      whiteSpace: 'nowrap'
+                    }}
                   >
                     ✏️ Edit
                   </button>
                   <button
                     onClick={() => handleDelete(it.id)}
-                    style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#B91C1C', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '4px 12px', fontSize: '0.82rem', cursor: 'pointer' }}
+                    style={{
+                      background: 'rgba(239, 68, 68, 0.1)',
+                      color: '#B91C1C',
+                      border: '1px solid rgba(239, 68, 68, 0.2)',
+                      padding: '5px 12px',
+                      fontSize: '0.82rem',
+                      cursor: 'pointer',
+                      borderRadius: '6px',
+                      whiteSpace: 'nowrap'
+                    }}
                   >
                     🗑️ Hapus
                   </button>
