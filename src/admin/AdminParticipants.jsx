@@ -155,13 +155,13 @@ export default function AdminParticipants({ supabase }) {
             <h4 style={{ marginTop: 24, marginBottom: 16, fontSize: '1.1rem', color: 'var(--pink-primary-dark)' }}>
               📊 Rekap Hasil Ujian
             </h4>
-            
+
             {(!selected.hasil || selected.hasil.length === 0) && (
               <div style={{ background: 'var(--pink-primary-light)', padding: 16, borderRadius: 14, color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                 Belum ada hasil ujian tersimpan untuk peserta ini.
               </div>
             )}
-            
+
             {Array.isArray(selected.hasil) && selected.hasil.map(h => {
               const inc = calculateKnowledgeIncrease(h.skor_pretest, h.skor_posttest, 10)
               return (
@@ -175,47 +175,146 @@ export default function AdminParticipants({ supabase }) {
                     <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginLeft: 'auto' }}>Waktu: {h.created_at ? new Date(h.created_at).toLocaleString('id-ID') : '-'}</div>
                   </div>
 
-                {h.pre_breakdown && h.pre_breakdown.length > 0 && (
-                  <div style={{ marginTop: 14 }}>
-                    <strong style={{ fontSize: '0.92rem', color: 'var(--text-heading)', display: 'block', marginBottom: 8 }}>Detail Pre-Test:</strong>
-                    <div>
-                      {h.pre_breakdown.map(item => (
-                        <div key={item.questionId} className="question-item">
-                          <div className="no">{item.no}.</div>
-                          <div className="qtext">{item.pertanyaan}</div>
-                          <div className="qmeta">
-                            Pilihan: <strong>{item.chosen ?? '-'}</strong> | Kunci: <strong>{item.correct}</strong>
-                            <span className={item.isCorrect ? 'badge success' : 'badge danger'} style={{ marginLeft: 8 }}>
-                              {item.isCorrect ? 'Benar' : 'Salah'}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                  {h.pre_breakdown && h.pre_breakdown.length > 0 && (
+                    <div style={{ marginTop: 14 }}>
+                      <strong style={{ fontSize: '0.92rem', color: 'var(--text-heading)', display: 'block', marginBottom: 10 }}>
+                        Detail Pre-Test:
+                      </strong>
 
-                {h.post_breakdown && h.post_breakdown.length > 0 && (
-                  <div style={{ marginTop: 18 }}>
-                    <strong style={{ fontSize: '0.92rem', color: 'var(--text-heading)', display: 'block', marginBottom: 8 }}>Detail Post-Test:</strong>
-                    <div>
-                      {h.post_breakdown.map(item => (
-                        <div key={item.questionId} className="question-item">
-                          <div className="no">{item.no}.</div>
-                          <div className="qtext">{item.pertanyaan}</div>
-                          <div className="qmeta">
-                            Pilihan: <strong>{item.chosen ?? '-'}</strong> | Kunci: <strong>{item.correct}</strong>
-                            <span className={item.isCorrect ? 'badge success' : 'badge danger'} style={{ marginLeft: 8 }}>
-                              {item.isCorrect ? 'Benar' : 'Salah'}
-                            </span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {h.pre_breakdown.map((item) => (
+                          <div
+                            key={item.questionId}
+                            style={{
+                              backgroundColor: '#fff',
+                              border: '1px solid #e2e8f0',
+                              borderRadius: '8px',
+                              padding: '10px 12px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '6px'
+                            }}
+                          >
+                            {/* Nomor & Pertanyaan */}
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                              <span style={{ fontWeight: 'bold', fontSize: '0.88rem', color: '#4a5568', minWidth: '20px' }}>
+                                {item.no}.
+                              </span>
+                              <div style={{ fontSize: '0.9rem', color: 'var(--text-heading)', fontWeight: '500', lineHeight: 1.4, flex: 1 }}>
+                                {item.pertanyaan}
+                              </div>
+                            </div>
+
+                            {/* Informasi Jawaban & Status Badge */}
+                            <div style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              flexWrap: 'wrap',
+                              gap: '6px',
+                              fontSize: '0.82rem',
+                              color: '#64748b',
+                              backgroundColor: '#f8fafc',
+                              padding: '6px 10px',
+                              borderRadius: '6px',
+                              marginTop: '2px'
+                            }}>
+                              <div>
+                                Pilihan: <strong style={{ color: '#1e293b' }}>{item.chosen ?? '-'}</strong>
+                                <span style={{ margin: '0 6px', color: '#cbd5e1' }}>|</span>
+                                Kunci: <strong style={{ color: '#1e293b' }}>{item.correct}</strong>
+                              </div>
+
+                              <span
+                                className={item.isCorrect ? 'badge success' : 'badge danger'}
+                                style={{
+                                  fontSize: '0.75rem',
+                                  padding: '2px 8px',
+                                  borderRadius: '4px',
+                                  fontWeight: '600',
+                                  marginLeft: 'auto'
+                                }}
+                              >
+                                {item.isCorrect ? '✓ Benar' : '✕ Salah'}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            )})}
+                  )}
+
+                  {h.post_breakdown && h.post_breakdown.length > 0 && (
+                    <div style={{ marginTop: 18 }}>
+                      <strong style={{ fontSize: '0.92rem', color: 'var(--text-heading)', display: 'block', marginBottom: 10 }}>
+                        Detail Post-Test:
+                      </strong>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {h.post_breakdown.map((item) => (
+                          <div
+                            key={item.questionId}
+                            style={{
+                              backgroundColor: '#fff',
+                              border: '1px solid #e2e8f0',
+                              borderRadius: '8px',
+                              padding: '10px 12px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '6px'
+                            }}
+                          >
+                            {/* Nomor & Pertanyaan */}
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                              <span style={{ fontWeight: 'bold', fontSize: '0.88rem', color: '#4a5568', minWidth: '20px' }}>
+                                {item.no}.
+                              </span>
+                              <div style={{ fontSize: '0.9rem', color: 'var(--text-heading)', fontWeight: '500', lineHeight: 1.4, flex: 1 }}>
+                                {item.pertanyaan}
+                              </div>
+                            </div>
+
+                            {/* Informasi Jawaban & Status Badge */}
+                            <div style={{
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              flexWrap: 'wrap',
+                              gap: '6px',
+                              fontSize: '0.82rem',
+                              color: '#64748b',
+                              backgroundColor: '#f8fafc',
+                              padding: '6px 10px',
+                              borderRadius: '6px',
+                              marginTop: '2px'
+                            }}>
+                              <div>
+                                Pilihan: <strong style={{ color: '#1e293b' }}>{item.chosen ?? '-'}</strong>
+                                <span style={{ margin: '0 6px', color: '#cbd5e1' }}>|</span>
+                                Kunci: <strong style={{ color: '#1e293b' }}>{item.correct}</strong>
+                              </div>
+
+                              <span
+                                className={item.isCorrect ? 'badge success' : 'badge danger'}
+                                style={{
+                                  fontSize: '0.75rem',
+                                  padding: '2px 8px',
+                                  borderRadius: '4px',
+                                  fontWeight: '600',
+                                  marginLeft: 'auto'
+                                }}
+                              >
+                                {item.isCorrect ? '✓ Benar' : '✕ Salah'}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
 
             <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(232, 122, 144, 0.15)', textAlign: 'right' }}>
               <button
